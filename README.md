@@ -58,7 +58,7 @@ AIHUBMIX_MODEL=gpt-5.5
 
 推荐使用 Render 部署为 Node.js Web Service。详细步骤见 [DEPLOY.md](DEPLOY.md)。
 
-生产环境建议配置：
+免费演示版建议配置：
 
 ```text
 AI_PROVIDER=aihubmix
@@ -67,11 +67,13 @@ AIHUBMIX_BASE_URL=https://aihubmix.com/v1
 AIHUBMIX_MODEL=gpt-5.5
 APP_USERNAME=designnote
 APP_PASSWORD=设置一个访问密码
-DATA_DIR=/opt/render/project/src/data
+DATA_DIR=/tmp/designnote-data
 NODE_VERSION=20
 ```
 
 `APP_PASSWORD` 会启用简单访问保护，避免公开链接被陌生人消耗 API 额度。
+
+免费演示版不使用持久化磁盘，Render 重启或重新部署后历史上传记录可能会丢失。用于作品集在线演示通常已经足够；如果后续要长期保存数据，可以再升级为带 Persistent Disk 的配置。
 
 ## 部署前验证
 

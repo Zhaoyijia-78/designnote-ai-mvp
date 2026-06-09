@@ -1,6 +1,6 @@
 # DesignNote AI MVP 部署说明
 
-推荐使用 Render 部署本项目。当前项目是一个 Node.js Web Service，会保存上传图片、项目记录、任务列表和聊天记录，因此线上环境建议开启 Persistent Disk。
+推荐使用 Render 部署本项目。当前配置是免费演示版：不使用 Persistent Disk，适合先把作品集 Demo 跑到公网。注意：免费实例重启、休眠恢复或重新部署后，上传图片、项目记录、任务列表和聊天记录可能会丢失。
 
 ## 1. 上线前检查
 
@@ -24,7 +24,7 @@ AIHUBMIX_BASE_URL=https://aihubmix.com/v1
 AIHUBMIX_MODEL=gpt-5.5
 APP_USERNAME=designnote
 APP_PASSWORD=设置一个访问密码
-DATA_DIR=/opt/render/project/src/data
+DATA_DIR=/tmp/designnote-data
 NODE_VERSION=20
 ```
 
@@ -32,7 +32,7 @@ NODE_VERSION=20
 
 ## 3. Render Web Service 配置
 
-如果使用仓库里的 `render.yaml`，可以通过 Render Blueprint 自动读取配置。
+如果使用仓库里的 `render.yaml`，可以通过 Render Blueprint 自动读取配置。当前 `render.yaml` 使用 `plan: free`，不会创建付费磁盘。
 
 如果手动创建 Web Service，填写：
 
@@ -43,12 +43,7 @@ Start Command: npm start
 Health Check Path: /api/health
 ```
 
-Persistent Disk 建议配置：
-
-```text
-Mount Path: /opt/render/project/src/data
-Size: 1 GB
-```
+免费演示版不配置 Persistent Disk。如果后续要让线上数据长期保存，可以把 `render.yaml` 改回付费磁盘版本，并把 `DATA_DIR` 改为 `/opt/render/project/src/data`。
 
 ## 4. 访问方式
 
@@ -67,10 +62,10 @@ Password: 你在 APP_PASSWORD 设置的密码
 - `AI_PROVIDER` 是否为 `aihubmix`。
 - `AIHUBMIX_MODEL` 是否为中转平台可用的模型名。
 
-如果上传记录丢失，检查：
+如果上传记录丢失：
 
-- Render Persistent Disk 是否已经创建。
-- `DATA_DIR` 是否为 `/opt/render/project/src/data`。
+- 免费演示版这是正常现象，Render 重启后临时目录可能会清空。
+- 如果要长期保存记录，需要升级到带 Persistent Disk 的部署方式。
 
 如果打开页面提示输入密码：
 
