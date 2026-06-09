@@ -1,0 +1,16 @@
+{
+  "name": "designnote-ai-mvp",
+  "version": "0.1.0",
+  "private": true,
+  "description": "DesignNote AI MVP - multimodal design meeting collaboration demo.",
+  "type": "module",
+  "scripts": {
+    "dev": "node server.js",
+    "start": "node server.js",
+    "test:smoke": "node scripts/smoke-test.mjs",
+    "test:sample": "node scripts/sample-e2e.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

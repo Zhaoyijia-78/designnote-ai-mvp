@@ -1,0 +1,30 @@
+services:
+  - type: web
+    name: designnote-ai-mvp
+    runtime: node
+    plan: starter
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: 20
+      - key: AI_PROVIDER
+        value: aihubmix
+      - key: AIHUBMIX_BASE_URL
+        value: https://aihubmix.com/v1
+      - key: AIHUBMIX_MODEL
+        value: gpt-5.5
+      - key: AIHUBMIX_API_KEY
+        sync: false
+      - key: APP_USERNAME
+        value: designnote
+      - key: APP_PASSWORD
+        sync: false
+      - key: DATA_DIR
+        value: /opt/render/project/src/data
+    disk:
+      name: designnote-data
+      mountPath: /opt/render/project/src/data
+      sizeGB: 1

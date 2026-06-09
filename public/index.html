@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>DesignNote AI MVP</title>
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <div class="brand-mark">✣</div>
+        <div>
+          <div class="brand-row">
+            <h1>DesignNote AI</h1>
+            <span>MVP 演示环境</span>
+          </div>
+          <p>互联网设计团队专属多模态会议协作系统</p>
+        </div>
+        <div class="top-actions">
+          <button id="toggleMarkersBtn" class="ghost-button">隐藏标注</button>
+          <button id="resetBtn" class="ghost-button">重置演示</button>
+        </div>
+      </header>
+
+      <main class="workspace">
+        <aside class="upload-panel panel">
+          <section class="panel-heading">
+            <strong>数据源上传</strong>
+            <small>上传设计稿与会议记录，AI 将自动关联生成空间任务。</small>
+          </section>
+
+          <div class="workflow-status">
+            <div class="workflow-step" data-step="image">
+              <span>1</span>
+              <strong>上传设计稿</strong>
+            </div>
+            <div class="workflow-step" data-step="text">
+              <span>2</span>
+              <strong>粘贴会议记录</strong>
+            </div>
+            <div class="workflow-step" data-step="analysis">
+              <span>3</span>
+              <strong>生成待办</strong>
+            </div>
+          </div>
+
+          <div class="input-block">
+            <div class="label-row">
+              <label>1. 上传 UI 设计稿（单张）</label>
+              <span id="uploadStatus">待上传</span>
+            </div>
+            <label class="dropzone" for="imageInput">
+              <input id="imageInput" type="file" accept="image/*" />
+              <img id="imagePreview" alt="" />
+              <div id="emptyPreview" class="empty-preview">Figma / PNG / JPG</div>
+            </label>
+          </div>
+
+          <div class="input-block grow">
+            <div class="label-row">
+              <label for="meetingText">2. 会议讨论记录</label>
+            </div>
+            <textarea id="meetingText" placeholder="粘贴会议文本记录，例如：&#10;【设计主管 李四 2026年5月30日 10:02】右上角的用户头像实在太小了。小王，你把右上角这个头像改大一点，调整到 32px。"></textarea>
+          </div>
+
+          <button id="analyzeBtn" class="primary-button">开始智能解析</button>
+        </aside>
+
+        <section class="main-stage">
+          <div class="canvas-toolbar">
+            <strong>设计画布</strong>
+            <div class="legend">
+              <span><i class="dot todo"></i>待处理</span>
+              <span><i class="dot done"></i>已完成</span>
+            </div>
+          </div>
+
+          <div id="canvas" class="canvas">
+            <img id="canvasImage" alt="上传的 UI 设计稿" />
+            <div id="canvasEmpty" class="canvas-empty"></div>
+            <div id="markersLayer"></div>
+            <div id="markerCard" class="marker-card hidden"></div>
+            <div id="jobOverlay" class="job-overlay hidden">
+              <div class="loader"></div>
+              <strong id="jobTitle">多模态大模型解析中</strong>
+              <p id="jobMessage">正在处理会议内容...</p>
+              <div class="progress-track"><div id="progressBar"></div></div>
+            </div>
+          </div>
+
+          <section class="task-panel panel">
+            <div class="task-header">
+              <div class="task-title-block">
+                <div class="task-title-main">
+                  <strong>待办事项</strong>
+                  <span id="taskProgress">进度：0 / 0</span>
+                  <div class="task-progress-track"><div id="taskProgressBar"></div></div>
+                </div>
+                <div id="taskConfidenceStats" class="task-confidence-stats" aria-label="任务可信度统计"></div>
+              </div>
+              <div class="task-controls">
+                <div class="segmented-control" id="statusFilter">
+                  <button type="button" data-status="all" class="active">全部</button>
+                  <button type="button" data-status="todo">待处理</button>
+                  <button type="button" data-status="done">已完成</button>
+                </div>
+                <select id="ownerFilter" aria-label="负责人筛选">
+                  <option value="all">全部负责人</option>
+                </select>
+                <button id="addTaskBtn" class="task-action-primary" type="button">新增任务</button>
+              </div>
+            </div>
+            <div class="task-table">
+              <div class="task-row head">
+                <span>状态</span>
+                <span>序号</span>
+                <span>修改概要 & 详细内容</span>
+                <span>负责人</span>
+                <span>截止日期</span>
+                <span>可信度</span>
+                <span>会议节点溯源</span>
+                <span>操作</span>
+              </div>
+              <div id="taskRows"></div>
+            </div>
+          </section>
+        </section>
+
+        <aside class="chat-panel panel">
+          <section class="panel-heading">
+            <strong>AI 会议助手</strong>
+            <small id="providerHint">等待解析当前会议材料</small>
+          </section>
+
+          <div id="chatMessages" class="chat-messages">
+            <div class="message ai assistant-empty">
+              <strong>等待会议材料解析</strong>
+              <p>完成上传和解析后，我可以按任务、负责人、色值和会议节点回答问题。</p>
+              <button class="prompt">主按钮具体要怎么修改？</button>
+              <button class="prompt">背景色的色值是多少？</button>
+            </div>
+          </div>
+
+          <form id="chatForm" class="chat-input">
+            <input id="chatInput" placeholder="解析完成后可提问会议决定、色值、负责人任务..." disabled />
+            <button>发送</button>
+          </form>
+          <small class="chat-footnote">基于多模态会话资料</small>
+        </aside>
+      </main>
+    </div>
+    <div id="taskFormOverlay" class="task-form-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="taskFormTitle">
+      <form id="taskForm" class="task-form-card">
+        <div class="task-form-head">
+          <strong id="taskFormTitle">新增任务</strong>
+          <button id="closeTaskFormBtn" type="button" aria-label="关闭">×</button>
+        </div>
+        <div class="task-form-body">
+          <label>
+            <span>修改概要</span>
+            <input name="title" required maxlength="80" />
+          </label>
+          <label>
+            <span>详细修改内容</span>
+            <textarea name="detail" required maxlength="500"></textarea>
+          </label>
+          <div class="task-form-grid">
+            <label>
+              <span>负责人</span>
+              <input name="owner" maxlength="30" />
+            </label>
+            <label>
+              <span>截止日期</span>
+              <input name="dueDate" maxlength="30" />
+            </label>
+          </div>
+          <label>
+            <span>会议节点溯源 / 原始会议片段</span>
+            <textarea name="meetingSource" maxlength="300"></textarea>
+          </label>
+          <label>
+            <span>可信度类型</span>
+            <select name="confidenceLevel">
+              <option value="explicit">明确任务</option>
+              <option value="suggested">待确认建议</option>
+              <option value="low">低置信度</option>
+            </select>
+          </label>
+        </div>
+        <div class="task-form-actions">
+          <button type="button" class="ghost-button" id="cancelTaskFormBtn">取消</button>
+          <button type="submit" class="task-action-primary">保存任务</button>
+        </div>
+      </form>
+    </div>
+    <script src="/app.js"></script>
+  </body>
+</html>
